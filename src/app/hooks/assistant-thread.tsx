@@ -91,7 +91,8 @@ const AssistantThread = (functionCallHandler: FunctionCallHandler, handleRunComp
       }),
     });
   
-    handleSystemStreamEvents(response.body as ReadableStream<any>);
+    const responseBody = await response.body as ReadableStream<any>;
+    handleSystemStreamEvents(responseBody);
   };
   
   const submitActionResult = async (runId: string, toolCallOutputs: any) => {
