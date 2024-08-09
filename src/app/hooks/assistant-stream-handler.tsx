@@ -65,9 +65,15 @@ const assistantStreamHandler = ({
 
     // events without helpers yet (e.g. requires_action and run.done)
     stream.on("event", (event) => {
-      if (event.event === "thread.run.requires_action")
+      if (event.event === "thread.run.requires_action") {
         handleRequiresAction(event);
-      if (event.event === "thread.run.completed") handleRunCompleted();
+      }
+      if (event.event === "thread.run.completed") {
+        handleRunCompleted();
+      }
+      if (event.event === "thread.run.failed") {
+        appendMessage("assistant", `The run failed. ${event?.data?.last_error?.code || ""} ${event?.data?.last_error?.message}`);
+      }
     });
   };
 
