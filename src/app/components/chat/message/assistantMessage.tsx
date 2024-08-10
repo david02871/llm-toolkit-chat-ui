@@ -53,6 +53,7 @@ const AssistantMessage = ({ text }: { text: string }) => {
           ]}
           rehypePlugins={rehypePlugins}
           components={{
+            // @ts-ignore
             code,
           }}
         >
