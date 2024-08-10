@@ -6,8 +6,10 @@ import Markdown from "react-markdown";
 
 const AssistantMessage = ({ text }: { text: string }) => {
     return (
-      <div className={styles.assistantMessage}>
-        <Markdown>{text}</Markdown>
+      <div className="flex justify-end">
+          <div className="bg-[#1e1e1e] px-5 py-2.5 overflow-scroll">
+          <Markdown>{text}</Markdown>
+          </div>
       </div>
     );
   };
