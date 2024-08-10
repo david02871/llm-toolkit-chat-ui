@@ -5,7 +5,7 @@ import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/ru
 import Message from "./message";
 import AssistantThread from "@/app/hooks/assistant-thread";
 import UserInput from "./userInput";
-import Header from "./header";
+import Header from "../header";
 
 type ChatProps = {
   functionCallHandler?: (
@@ -50,12 +50,12 @@ const Chat = ({
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
       <Header />
       <main className="flex-1 overflow-y-auto">
-          <div className="w-[680px] p-2 mx-auto flex flex-col gap-4 w-[680px] p-2 mx-auto">
-            {messages.map((msg: any, index: number) => (
-              <Message key={index} role={msg.role} text={msg.text} />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+        <div className="w-[680px] p-2 mx-auto flex flex-col gap-4 w-[680px] p-2 mx-auto">
+          {messages.map((msg: any, index: number) => (
+            <Message key={index} role={msg.role} text={msg.text} />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
       </main>
       <UserInput
         handleSubmit={handleSubmit}
