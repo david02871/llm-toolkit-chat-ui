@@ -4,16 +4,16 @@ import React from "react";
 
 const Sidebar = () => {
     return (
-        <div className="h-full w-[260px] bg-[#2b2b2b] p-4 flex flex-col justify-between">
+        <div className="h-full w-[260px] p-4 flex flex-col justify-between bg-background-sidebar">
         <div>
           <div className="mb-4">
             <h1 className="text-xl font-bold">ChatGPT 4.0</h1>
           </div>
           <div className="space-y-4">
-            <button className="w-full text-left hover:bg-[#3b3b3b] p-2 rounded">
+            <button className="w-full text-left hover:bg-background-sidebar-surface p-2 rounded">
               ChatGPT
             </button>
-            <button className="w-full text-left hover:bg-[#3b3b3b] p-2 rounded">
+            <button className="w-full text-left hover:bg-background-sidebar-surface p-2 rounded">
               ChatGPT
             </button>
           </div>
@@ -25,7 +25,7 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-        <button className="w-full text-left hover:bg-[#3b3b3b] p-2 rounded">
+        <button className="w-full text-left hover:bg-background-sidebar-surface p-2 rounded">
           Add Team workspace
         </button>
       </div>

@@ -5,6 +5,7 @@ import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/ru
 import Message from "./message";
 import AssistantThread from "@/app/hooks/assistant-thread";
 import UserInput from "./userInput";
+import Header from "./header";
 
 type ChatProps = {
   functionCallHandler?: (
@@ -47,9 +48,7 @@ const Chat = ({
 
   return (
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
-      <header className="bg-[#1e1e1e] p-4 h-[60px] w-full">
-        <h1 className="text-2xl font-bold mb-8">🧙‍♂️ GPT 4o</h1>
-      </header>
+      <Header />
       <main className="flex-1 overflow-y-auto">
           <div className="w-[680px] p-2 mx-auto flex flex-col gap-4 w-[680px] p-2 mx-auto">
             {messages.map((msg: any, index: number) => (

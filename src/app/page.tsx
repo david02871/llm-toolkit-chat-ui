@@ -12,7 +12,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#1e1e1e] text-white">
+    <div className="flex h-screen w-screen">
       <Sidebar />
       <Chat functionCallHandler={functionCallHandler} />
     </div>

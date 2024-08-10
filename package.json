@@ -9,13 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "highlight.js": "^11.10.0",
     "next": "14.2.5",
     "openai": "^4.55.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-markdown": "^9.0.1"
+    "react-markdown": "^9.0.1",
+    "rehype-highlight": "^7.0.0",
+    "rehype-katex": "^7.0.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-math": "^6.0.0",
+    "remark-supersub": "^1.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.14",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
