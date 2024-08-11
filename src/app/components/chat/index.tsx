@@ -7,17 +7,27 @@ import AssistantThread from "@/app/hooks/assistant-thread";
 import UserInput from "./userInput";
 import Header from "../header";
 
-type ChatProps = {
-  functionCallHandler?: (
-    toolCall: RequiredActionFunctionToolCall
-  ) => Promise<string>;
-};
-
-const Chat = ({
-  functionCallHandler = () => Promise.resolve(""), // default to return empty string
-}: ChatProps) => {
+const Chat = () => {
   const [inputDisabled, setInputDisabled] = useState(false);
   const [userInput, setUserInput] = useState("");
+
+  const functionCallHandler = async (
+    functionCall: RequiredActionFunctionToolCall
+  ) => {
+    // {
+    //   id: 'call_wUlEFlpUphSxLnvlThDg1IYa',
+    //   type: 'function',
+    //   function: {
+    //     name: 'get_weather',
+    //     arguments: '{"location":"London, UK","unit":"c"}'
+    //   }
+    // }
+
+    console.log(functionCall);
+    // if (call?.function?.name !== "get_weather") return;
+    // const args = JSON.parse(call.function.arguments);
+    return "Hello world";
+  };
 
   const { messages, setMessages, sendMessage } = AssistantThread(
     functionCallHandler,

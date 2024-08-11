@@ -3,9 +3,14 @@ import assistantStreamHandler from "./assistant-stream-handler";
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs";
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs";
 
-type FunctionCallHandler = (call: RequiredActionFunctionToolCall) => Promise<string>;
+type FunctionCallHandler = (
+  call: RequiredActionFunctionToolCall
+) => Promise<string>;
 
-const AssistantThread = (functionCallHandler: FunctionCallHandler, handleRunCompleted: () => void) => {
+const AssistantThread = (
+  functionCallHandler: FunctionCallHandler,
+  handleRunCompleted: () => void
+) => {
   const [messages, setMessages] = useState<any>([]);
   const [threadId, setThreadId] = useState("");
 
@@ -67,8 +72,19 @@ const AssistantThread = (functionCallHandler: FunctionCallHandler, handleRunComp
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
     // loop over tool calls and call function handler
     const toolCallOutputs = await Promise.all(
+      //       {
+      //   id: 'call_wUlEFlpUphSxLnvlThDg1IYa',
+      //   type: 'function',
+      //   function: {
+      //     name: 'get_weather',
+      //     arguments: '{"location":"London, UK","unit":"c"}'
+      //   }
+      // }
       toolCalls.map(async (toolCall: any) => {
+        console.log(toolCall);
         const result = await functionCallHandler(toolCall);
+        // Hello World
+        console.log(result);
         return { output: result, tool_call_id: toolCall.id };
       })
     );
@@ -82,31 +98,37 @@ const AssistantThread = (functionCallHandler: FunctionCallHandler, handleRunComp
     annotateLastMessage,
     handleRequiresAction,
   });
-  
+
   const sendMessage = async (text: string) => {
-    const response = await fetch(`/api/assistants/threads/${threadId}/messages`, {
-      method: "POST",
-      body: JSON.stringify({
-        content: text,
-      }),
-    });
-  
-    const responseBody = await response.body as ReadableStream<any>;
+    const response = await fetch(
+      `/api/assistants/threads/${threadId}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          content: text,
+        }),
+      }
+    );
+
+    const responseBody = (await response.body) as ReadableStream<any>;
     handleSystemStreamEvents(responseBody);
   };
-  
+
   const submitActionResult = async (runId: string, toolCallOutputs: any) => {
-    const response = await fetch(`/api/assistants/threads/${threadId}/actions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        runId: runId,
-        toolCallOutputs: toolCallOutputs,
-      }),
-    });
-  
+    const response = await fetch(
+      `/api/assistants/threads/${threadId}/actions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          runId: runId,
+          toolCallOutputs: toolCallOutputs,
+        }),
+      }
+    );
+
     handleSystemStreamEvents(response.body as ReadableStream<any>);
   };
 
