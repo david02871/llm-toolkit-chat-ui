@@ -16,11 +16,10 @@ const config: Config = {
         "background-sidebar": "var(--background-sidebar)",
         "background-sidebar-surface": "var(--background-sidebar-surface)",
         "background-surface": "var(--background-surface)",
-      }
+        "border-medium": "var(--border-medium)",
+      },
     },
   },
-  plugins: [
-    require("@tailwindcss/typography")
-  ],
+  plugins: [require("@tailwindcss/typography")],
 };
 export default config;

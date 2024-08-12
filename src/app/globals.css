@@ -13,6 +13,7 @@
     --background-sidebar: #f9f9f9;
     --background-sidebar-surface: #ececec;
     --background-surface: #f4f4f4;
+    --border-medium: #0000001f;
   }
  
   .dark {
@@ -22,5 +23,6 @@
     --background-sidebar: #171717;
     --background-sidebar-surface: #212121;
     --background-surface: #2f2f2f;
+    --border-medium: #ffffff26;
   } 
 }

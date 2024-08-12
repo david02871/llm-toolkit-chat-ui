@@ -6,10 +6,15 @@ import Message from "./message";
 import AssistantThread from "@/app/hooks/assistant-thread";
 import UserInput from "./userInput";
 import Header from "../header";
+import usePersistentState from "@/app/hooks/usePersistedState";
 
 const Chat = () => {
   const [inputDisabled, setInputDisabled] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const [currentAssistant, setCurrentAssistant] = usePersistentState(
+    "currentAssistant",
+    ""
+  );
 
   const functionCallHandler = async (
     functionCall: RequiredActionFunctionToolCall
@@ -58,7 +63,10 @@ const Chat = () => {
 
   return (
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
-      <Header />
+      <Header
+        currentAssistant={currentAssistant}
+        setCurrentAssistant={setCurrentAssistant}
+      />
       <main className="flex-1 overflow-y-auto">
         <div className="w-[680px] p-2 mx-auto flex flex-col gap-4 w-[680px] p-2 mx-auto">
           {messages.map((msg: any, index: number) => (
