@@ -16,6 +16,7 @@ const config: Config = {
         "background-sidebar": "var(--background-sidebar)",
         "background-sidebar-surface": "var(--background-sidebar-surface)",
         "background-surface": "var(--background-surface)",
+        "background-surface-secondary": "var(--background-surface-secondary)",
         "border-medium": "var(--border-medium)",
       },
     },
