@@ -99,13 +99,14 @@ const AssistantThread = (
     handleRequiresAction,
   })
 
-  const sendMessage = async (text: string) => {
+  const sendMessage = async (text: string, assistantId: string) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
         method: "POST",
         body: JSON.stringify({
           content: text,
+          assistantId,
         }),
       },
     )

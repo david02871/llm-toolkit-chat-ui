@@ -51,7 +51,7 @@ const Chat = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (!userInput.trim()) return
-    sendMessage(userInput)
+    sendMessage(userInput, currentAssistant)
     setMessages((prevMessages: any) => [
       ...prevMessages,
       { role: "user", text: userInput },
