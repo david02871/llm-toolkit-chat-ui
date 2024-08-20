@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import ThemeToggleButton from "./ui/themeToggleButton";
 import CreateAssistantDialog from "./createAssistantDialog";
 import { TitleSelect, TitleSelectItem } from "./ui/TitleSelect";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 type HeaderProps = {
   currentAssistant: string;
@@ -21,37 +24,40 @@ const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
     fetchAssistants();
   }, [setAssistants, setCurrentAssistant]);
 
-  const handleAssistantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value === "new") {
-      setAssistantDialogOpen(true);
-      return;
-    }
-
-    setCurrentAssistant(e.target.value);
-  };
-
   return (
     <div>
-      <header className="flex text-text-secondary p-4 h-[60px] w-full flex-row justify-between">
+      <div className="flex text-text-secondary p-4 h-[60px] w-full flex-row justify-between">
         <div className="flex flex-row items-center justify-start">
           <h1 className="text-2xl font-bold">🧙‍♂️</h1>
-          <TitleSelect
-            placeholder="Select assistant"
-            value={currentAssistant}
-            onValueChange={setCurrentAssistant}
+          {assistants && (
+            <TitleSelect
+              placeholder="Select assistant"
+              value={currentAssistant}
+              onValueChange={setCurrentAssistant}
+            >
+              {assistants.length > 0 &&
+                assistants.map((assistant: any) => (
+                  <TitleSelectItem key={assistant.id} value={assistant.id}>
+                    {assistant.name || "Untitled Assistant"}
+                  </TitleSelectItem>
+                ))}
+            </TitleSelect>
+          )}
+          <button
+            onClick={() => setAssistantDialogOpen(true)}
+            className="ml-2 p-2 rounded-full bg-background-primary text-text-primary hover:bg-background-surface"
+            aria-label="Add new assistant"
           >
-            {assistants.length > 0 &&
-              assistants.map((assistant: any) => (
-                <TitleSelectItem key={assistant.id} value={assistant.id}>
-                  {assistant.name || "Untitled Assistant"}
-                </TitleSelectItem>
-              ))}
-          </TitleSelect>
+            <PlusIcon className="w-5 h-5" />
+          </button>
         </div>
         <ThemeToggleButton />
-      </header>
+      </div>
       {assistantDialogOpen && (
-        <CreateAssistantDialog onClose={() => setAssistantDialogOpen(false)} />
+        <CreateAssistantDialog
+          onClose={() => setAssistantDialogOpen(false)}
+          setCurrentAssistant={setCurrentAssistant}
+        />
       )}
     </div>
   );

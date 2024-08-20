@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
@@ -40,7 +42,7 @@ export const TitleSelect = React.forwardRef<HTMLDivElement, TitleSelectProps>(
 
           <Select.Portal>
             <Select.Content
-              className="z-10 rounded-md shadow-lg bg-background-primary dark:bg-background-surface py-50"
+              className="z-10 rounded-md shadow-lg bg-background-primary dark:bg-background-surface py-50 border border-black border-opacity-10"
               position="popper"
               sideOffset={0}
             >

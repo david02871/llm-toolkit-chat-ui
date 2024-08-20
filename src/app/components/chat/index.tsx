@@ -68,7 +68,7 @@ const Chat = () => {
         setCurrentAssistant={setCurrentAssistant}
       />
       <main className="flex-1 overflow-y-auto">
-        <div className="w-[680px] p-2 mx-auto flex flex-col gap-4 w-[680px] p-2 mx-auto">
+        <div className="w-[680px] p-2 mx-auto flex flex-col gap-4">
           {messages.map((msg: any, index: number) => (
             <Message key={index} role={msg.role} text={msg.text} />
           ))}

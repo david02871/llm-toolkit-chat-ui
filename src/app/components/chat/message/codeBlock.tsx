@@ -13,7 +13,7 @@ const CodeBar = ({ lang, codeRef }: CodeBarProps) => {
   };
 
   return (
-    <div className="flex relative -mx-4 -mt-3 bg-background-surface px-3 py-1.5 text-text-secondary text-xs flex-row justify-between">
+    <div className="flex relative -mx-4 px-3 py-1.5 flex-row justify-between bg-background-surface text-text-secondary text-xs top-[-15px]">
       <div>{lang}</div> <button onClick={copyCode}>Copy code</button>
     </div>
   );
@@ -31,12 +31,12 @@ const CodeBlock = (props: any) => {
   const codeRef = useRef<HTMLElement>(null);
 
   return (
-    <div>
+    <>
       <CodeBar lang={lang} codeRef={codeRef} />
       <code ref={codeRef} className={`${props.className} text-sm`}>
         {props.children}
       </code>
-    </div>
+    </>
   );
 };
 
