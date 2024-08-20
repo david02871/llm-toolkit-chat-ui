@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 interface TextInputProps {
-  id: string;
-  label: string;
-  placeholder?: string;
+  id: string
+  label: string
+  placeholder?: string
 }
 
 const TextInput: React.FC<TextInputProps> = ({ id, label, placeholder }) => (
@@ -21,6 +21,6 @@ const TextInput: React.FC<TextInputProps> = ({ id, label, placeholder }) => (
       placeholder={placeholder}
     />
   </div>
-);
+)
 
-export default TextInput;
+export default TextInput

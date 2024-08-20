@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 interface TextAreaProps {
-  id: string;
-  label: string;
-  placeholder?: string;
-  rows?: number;
+  id: string
+  label: string
+  placeholder?: string
+  rows?: number
 }
 
 const TextArea: React.FC<TextAreaProps> = ({
@@ -27,6 +27,6 @@ const TextArea: React.FC<TextAreaProps> = ({
       rows={rows}
     ></textarea>
   </div>
-);
+)
 
-export default TextArea;
+export default TextArea

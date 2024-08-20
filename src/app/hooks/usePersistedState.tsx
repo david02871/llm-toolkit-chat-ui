@@ -1,33 +1,33 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 
 function usePersistentState<T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [state, setState] = useState<T>(initialValue);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [state, setState] = useState<T>(initialValue)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
     // Set the state from localStorage after hydration
     if (typeof window !== "undefined") {
-      const storedValue = localStorage.getItem(key);
+      const storedValue = localStorage.getItem(key)
       if (storedValue !== null) {
-        setState(JSON.parse(storedValue));
+        setState(JSON.parse(storedValue))
       }
-      setIsHydrated(true);
+      setIsHydrated(true)
     }
-  }, [key]);
+  }, [key])
 
   useEffect(() => {
     // Update localStorage whenever the state changes after hydration
     if (isHydrated) {
-      localStorage.setItem(key, JSON.stringify(state));
+      localStorage.setItem(key, JSON.stringify(state))
     }
-  }, [key, state, isHydrated]);
+  }, [key, state, isHydrated])
 
-  return [state, setState];
+  return [state, setState]
 }
 
-export default usePersistentState;
+export default usePersistentState

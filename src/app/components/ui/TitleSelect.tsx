@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import React from "react";
-import * as Select from "@radix-ui/react-select";
-import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import React from "react"
+import * as Select from "@radix-ui/react-select"
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons"
 
 export const TitleSelectItem = React.forwardRef<
   HTMLDivElement,
@@ -16,13 +16,13 @@ export const TitleSelectItem = React.forwardRef<
     >
       <Select.ItemText>{children}</Select.ItemText>
     </Select.Item>
-  );
-});
+  )
+})
 
-TitleSelectItem.displayName = "TitleSelectItem";
+TitleSelectItem.displayName = "TitleSelectItem"
 
 interface TitleSelectProps extends React.ComponentProps<typeof Select.Root> {
-  placeholder?: string;
+  placeholder?: string
 }
 
 export const TitleSelect = React.forwardRef<HTMLDivElement, TitleSelectProps>(
@@ -59,8 +59,8 @@ export const TitleSelect = React.forwardRef<HTMLDivElement, TitleSelectProps>(
           </Select.Portal>
         </Select.Root>
       </div>
-    );
-  }
-);
+    )
+  },
+)
 
-TitleSelect.displayName = "TitleSelect";
+TitleSelect.displayName = "TitleSelect"

@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react"
 
 type UserInputProps = {
-  handleSubmit: (e: any) => void;
-  isDisabled: boolean;
-  userInput: string;
-  setUserInput: (value: string) => void;
-};
+  handleSubmit: (e: any) => void
+  isDisabled: boolean
+  userInput: string
+  setUserInput: (value: string) => void
+}
 
 const UserInput = ({
   handleSubmit,
@@ -16,24 +16,24 @@ const UserInput = ({
   setUserInput,
 }: UserInputProps) => {
   const handleInputChange = (event: any) => {
-    setUserInput(event.target.value);
-  };
+    setUserInput(event.target.value)
+  }
 
   const handleKeyDown = (event: any) => {
     if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault(); // Prevents newline from being added
-      handleSubmit(event);
+      event.preventDefault() // Prevents newline from being added
+      handleSubmit(event)
     }
-  };
+  }
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // Reset the height
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set it to the scroll height
+      textareaRef.current.style.height = "auto" // Reset the height
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px` // Set it to the scroll height
     }
-  }, [userInput]); // Run effect every time the input value changes
+  }, [userInput]) // Run effect every time the input value changes
 
   return (
     <div className="w-full pb-6 bg-background-primary flex justify-center">
@@ -73,7 +73,10 @@ const UserInput = ({
           className={`ml-3 bg-text-secondary p-3 rounded-full ${isDisabled ? "" : "hover:bg-text-primary"}`}
           onClick={handleSubmit}
           disabled={isDisabled}
-          style={{ cursor: isDisabled ? "not-allowed" : "pointer", opacity: isDisabled ? 0.3 : 1 }}
+          style={{
+            cursor: isDisabled ? "not-allowed" : "pointer",
+            opacity: isDisabled ? 0.3 : 1,
+          }}
         >
           {/* Send button with up arrow */}
           <svg
@@ -93,7 +96,7 @@ const UserInput = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserInput;
+export default UserInput

@@ -1,38 +1,38 @@
-import React, { useState, useEffect, useRef } from "react";
-import SelectInput from "./ui/SelectInput";
-import TextInput from "./ui/TextInput";
-import TextArea from "./ui/TextArea";
-import { createAssistant } from "../actions/createAssistant";
+import React, { useState, useEffect, useRef } from "react"
+import SelectInput from "./ui/SelectInput"
+import TextInput from "./ui/TextInput"
+import TextArea from "./ui/TextArea"
+import { createAssistant } from "../actions/createAssistant"
 
 type PopupDialogProps = {
-  onClose: () => void;
-  setCurrentAssistant: (assistantId: string) => void;
-};
+  onClose: () => void
+  setCurrentAssistant: (assistantId: string) => void
+}
 
 const CreateAssistantDialog = ({
   onClose,
   setCurrentAssistant,
 }: PopupDialogProps) => {
-  const [models, setModels] = useState<any>([]);
+  const [models, setModels] = useState<any>([])
 
   useEffect(() => {
     const fetchModels = async () => {
-      const response = await fetch("/api/models");
-      const fetchedModels = await response.json();
-      setModels(fetchedModels);
-    };
-    fetchModels();
-  }, []);
+      const response = await fetch("/api/models")
+      const fetchedModels = await response.json()
+      setModels(fetchedModels)
+    }
+    fetchModels()
+  }, [])
 
   const handleFormSubmit = async (formData: FormData) => {
     try {
-      const assistantId = await createAssistant(formData); // Call the server action
-      setCurrentAssistant(assistantId); // Update the state in the client
-      window.location.reload();
+      const assistantId = await createAssistant(formData) // Call the server action
+      setCurrentAssistant(assistantId) // Update the state in the client
+      window.location.reload()
     } catch (error) {
-      console.error("Failed to create assistant", error);
+      console.error("Failed to create assistant", error)
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -83,7 +83,7 @@ const CreateAssistantDialog = ({
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreateAssistantDialog;
+export default CreateAssistantDialog

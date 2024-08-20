@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 interface SelectInputProps {
-  id: string;
-  label: string;
-  options: { id: string | number; label: string }[];
+  id: string
+  label: string
+  options: { id: string | number; label: string }[]
 }
 
 const SelectInput: React.FC<SelectInputProps> = ({ id, label, options }) => {
@@ -26,7 +26,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ id, label, options }) => {
         ))}
       </select>
     </div>
-  );
-};
+  )
+}
 
-export default SelectInput;
+export default SelectInput

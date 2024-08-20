@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 const CodeMessage = ({ text }: { text: string }) => {
   return (
@@ -12,7 +12,7 @@ const CodeMessage = ({ text }: { text: string }) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default CodeMessage;
+export default CodeMessage

@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import ThemeToggleButton from "./ui/themeToggleButton";
-import CreateAssistantDialog from "./createAssistantDialog";
-import { TitleSelect, TitleSelectItem } from "./ui/TitleSelect";
-import { PlusIcon } from "@radix-ui/react-icons";
+import React, { useState, useEffect } from "react"
+import ThemeToggleButton from "./ui/themeToggleButton"
+import CreateAssistantDialog from "./createAssistantDialog"
+import { TitleSelect, TitleSelectItem } from "./ui/TitleSelect"
+import { PlusIcon } from "@radix-ui/react-icons"
 
 type HeaderProps = {
-  currentAssistant: string;
-  setCurrentAssistant: (assistant: string) => void;
-};
+  currentAssistant: string
+  setCurrentAssistant: (assistant: string) => void
+}
 
 const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
-  const [assistants, setAssistants] = useState([]);
-  const [assistantDialogOpen, setAssistantDialogOpen] = useState(false);
+  const [assistants, setAssistants] = useState([])
+  const [assistantDialogOpen, setAssistantDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchAssistants = async () => {
-      const response = await fetch("/api/assistants");
-      let fetchedAssistants = await response.json();
-      setAssistants(fetchedAssistants);
-    };
-    fetchAssistants();
-  }, [setAssistants, setCurrentAssistant]);
+      const response = await fetch("/api/assistants")
+      let fetchedAssistants = await response.json()
+      setAssistants(fetchedAssistants)
+    }
+    fetchAssistants()
+  }, [setAssistants, setCurrentAssistant])
 
   return (
     <div>
@@ -60,7 +60,7 @@ const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

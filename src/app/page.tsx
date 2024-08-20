@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import Chat from "@/app/components/chat";
-import Sidebar from "./components/sidebar";
+import Chat from "@/app/components/chat"
+import Sidebar from "./components/sidebar"
 
 export default function Home() {
   return (
@@ -9,5 +9,5 @@ export default function Home() {
       <Sidebar />
       <Chat />
     </div>
-  );
+  )
 }
