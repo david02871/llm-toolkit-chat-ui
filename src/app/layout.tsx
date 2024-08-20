@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -32,7 +32,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="text-text-primary bg-background-primary">{children}</body>
+      <body className="text-text-primary bg-background-primary">
+        {children}
+      </body>
     </html>
   );
 }
