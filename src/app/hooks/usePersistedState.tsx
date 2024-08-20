@@ -1,21 +1,31 @@
+"use client";
+
 import { useState, useEffect } from "react";
 
 function usePersistentState<T>(
   key: string,
   initialValue: T
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
-  // Get the stored value from localStorage or use the initial value if not present
-  const getInitialValue = () => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : initialValue;
-  };
-
-  const [state, setState] = useState<T>(getInitialValue);
+  const [state, setState] = useState<T>(initialValue);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Update localStorage whenever the state changes
-    localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
+    // Set the state from localStorage after hydration
+    if (typeof window !== "undefined") {
+      const storedValue = localStorage.getItem(key);
+      if (storedValue !== null) {
+        setState(JSON.parse(storedValue));
+      }
+      setIsHydrated(true);
+    }
+  }, [key]);
+
+  useEffect(() => {
+    // Update localStorage whenever the state changes after hydration
+    if (isHydrated) {
+      localStorage.setItem(key, JSON.stringify(state));
+    }
+  }, [key, state, isHydrated]);
 
   return [state, setState];
 }
