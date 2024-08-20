@@ -47,15 +47,21 @@ const assistantStreamHandler = ({
     //   type: 'function',
     //   function: { name: 'get_weather', arguments: '', output: null }
     // }
-    if (toolCall.type != "code_interpreter") return
+    if (toolCall.type != "code_interpreter") {
+      return
+    }
     appendMessage("code", "")
   }
 
   // toolCallDelta - log delta and snapshot for the tool call
-  const toolCallDelta = (delta: any, snapshot: any) => {
+  const toolCallDelta = (delta: any) => {
     console.log(delta)
-    if (delta.type != "code_interpreter") return
-    if (!delta.code_interpreter.input) return
+    if (delta.type != "code_interpreter") {
+      return
+    }
+    if (!delta.code_interpreter.input) {
+      return
+    }
     appendToLastMessage(delta.code_interpreter.input)
   }
 

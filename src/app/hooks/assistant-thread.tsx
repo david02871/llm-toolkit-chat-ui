@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import assistantStreamHandler from "./assistant-stream-handler"
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs"
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs"
