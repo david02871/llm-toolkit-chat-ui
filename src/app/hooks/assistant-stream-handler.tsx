@@ -53,7 +53,7 @@ const assistantStreamHandler = ({
       return
     }
 
-    appendMessage("assistant", JSON.stringify(toolCall, null, 2))
+    // appendMessage("assistant", JSON.stringify(toolCall, null, 2))
   }
 
   // toolCallDelta - log delta and snapshot for the tool call

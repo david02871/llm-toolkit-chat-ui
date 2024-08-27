@@ -71,23 +71,32 @@ const AssistantThread = (
     }
 
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls
+
+    appendMessage(
+      "assistant",
+      `
+\`\`\`json
+  ${JSON.stringify(toolCalls, null, 2)}
+\`\`\`
+      `,
+    )
+
     // loop over tool calls and call function handler
     const toolCallOutputs = await Promise.all(
-      //       {
-      //   id: 'call_wUlEFlpUphSxLnvlThDg1IYa',
-      //   type: 'function',
-      //   function: {
-      //     name: 'get_weather',
-      //     arguments: '{"location":"London, UK","unit":"c"}'
-      //   }
-      // }
       toolCalls.map(async (toolCall: any) => {
         const result = await functionCallHandler(toolCall)
         return { output: result, tool_call_id: toolCall.id }
       }),
     )
 
-    appendMessage("assistant", JSON.stringify(toolCallOutputs, null, 2))
+    appendMessage(
+      "assistant",
+      `
+\`\`\`json
+${JSON.stringify(toolCallOutputs, null, 2)}
+\`\`\`
+      `,
+    )
     submitActionResult(runId, toolCallOutputs)
   }
 
@@ -127,10 +136,7 @@ const AssistantThread = (
   })
 
   const sendMessage = async (text: string) => {
-    setMessages((prevMessages: any) => [
-      ...prevMessages,
-      { role: "user", text },
-    ])
+    appendMessage("user", text)
 
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
