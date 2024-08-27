@@ -58,6 +58,8 @@ const uploadPendingFile = async () => {
         "uploaded",
         `${file.id}.json`,
       )
+
+      fs.renameSync(filePath, newFilePath)
     }
 
     return file.id
