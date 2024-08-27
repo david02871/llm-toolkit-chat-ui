@@ -9,7 +9,8 @@ type FunctionCallHandler = (
 
 const AssistantThread = (
   functionCallHandler: FunctionCallHandler,
-  handleRunCompleted: () => void,
+  handleRunCompleted: (threadId: string) => void,
+  assistantId: string,
 ) => {
   const [messages, setMessages] = useState<any>([])
   const [threadId, setThreadId] = useState("")
@@ -81,14 +82,39 @@ const AssistantThread = (
       //   }
       // }
       toolCalls.map(async (toolCall: any) => {
-        console.log(toolCall)
         const result = await functionCallHandler(toolCall)
-        // Hello World
-        console.log(result)
         return { output: result, tool_call_id: toolCall.id }
       }),
     )
+
+    appendMessage("assistant", JSON.stringify(toolCallOutputs, null, 2))
     submitActionResult(runId, toolCallOutputs)
+  }
+
+  const handlePendingTasks = async (
+    threadId: string,
+    handleSystemStreamEventsCallback: any,
+  ) => {
+    const response = await fetch(
+      `/api/assistants/threads/${threadId}/handle-pending-tasks`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assistantId,
+        }),
+      },
+    )
+
+    const responseBody = await response.body
+
+    if (response.headers.get("Content-Type") === "application/json") {
+      // NOP
+    } else {
+      handleSystemStreamEventsCallback(responseBody)
+    }
   }
 
   const handleSystemStreamEvents = assistantStreamHandler({
@@ -97,9 +123,15 @@ const AssistantThread = (
     appendToLastMessage,
     annotateLastMessage,
     handleRequiresAction,
+    handlePendingTasks,
   })
 
-  const sendMessage = async (text: string, assistantId: string) => {
+  const sendMessage = async (text: string) => {
+    setMessages((prevMessages: any) => [
+      ...prevMessages,
+      { role: "user", text },
+    ])
+
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {

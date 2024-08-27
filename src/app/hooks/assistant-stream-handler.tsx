@@ -2,13 +2,15 @@ import { AssistantStream } from "openai/lib/AssistantStream.mjs"
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs"
 
 type AssistantStreamProps = {
-  handleRunCompleted: () => void
+  handleRunCompleted: (threadId: string) => void
   appendMessage: (role: string, text: string) => void
   appendToLastMessage: (text: string) => void
   annotateLastMessage: (annotations: any) => void
   handleRequiresAction: (
     event: AssistantStreamEvent.ThreadRunRequiresAction,
   ) => void
+
+  handlePendingTasks: (threadId: string, assistantStreamHandler: any) => void
 }
 
 const assistantStreamHandler = ({
@@ -17,6 +19,7 @@ const assistantStreamHandler = ({
   appendToLastMessage,
   annotateLastMessage,
   handleRequiresAction,
+  handlePendingTasks,
 }: AssistantStreamProps) => {
   // textCreated - create new assistant message
   const handleTextCreated = () => {
@@ -40,22 +43,21 @@ const assistantStreamHandler = ({
 
   // toolCallCreated - log new tool call
   const toolCallCreated = (toolCall: { type: string }) => {
-    console.log(toolCall)
     //     {
     //   index: 0,
     //   id: 'call_wUlEFlpUphSxLnvlThDg1IYa',
     //   type: 'function',
     //   function: { name: 'get_weather', arguments: '', output: null }
     // }
-    if (toolCall.type != "code_interpreter") {
+    if (toolCall.type == "code_interpreter") {
       return
     }
-    appendMessage("code", "")
+
+    appendMessage("assistant", JSON.stringify(toolCall, null, 2))
   }
 
   // toolCallDelta - log delta and snapshot for the tool call
   const toolCallDelta = (delta: any) => {
-    console.log(delta)
     if (delta.type != "code_interpreter") {
       return
     }
@@ -149,14 +151,13 @@ const assistantStreamHandler = ({
           //     parallel_tool_calls: true
           //   }
         }
-        console.log(event)
         handleRequiresAction(event)
       }
       if (event.event === "thread.run.completed") {
-        handleRunCompleted()
+        handleRunCompleted(event.data.thread_id)
+        handlePendingTasks(event.data.thread_id, assistantStreamEventHandler)
       }
       if (event.event === "thread.run.failed") {
-        console.error(event)
         appendMessage(
           "assistant",
           `The run failed. ${event?.data?.last_error?.code || ""} ${

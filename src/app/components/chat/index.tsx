@@ -19,24 +19,32 @@ const Chat = () => {
   const functionCallHandler = async (
     functionCall: RequiredActionFunctionToolCall,
   ) => {
-    // {
-    //   id: 'call_wUlEFlpUphSxLnvlThDg1IYa',
-    //   type: 'function',
-    //   function: {
-    //     name: 'get_weather',
-    //     arguments: '{"location":"London, UK","unit":"c"}'
-    //   }
-    // }
+    const response = (await fetch(`/api/assistants/handle-function-call`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(functionCall),
+    })) as any
 
-    console.log(functionCall)
-    // if (call?.function?.name !== "get_weather") return;
-    // const args = JSON.parse(call.function.arguments);
-    return "Hello world"
+    if (response) {
+      let data = await response.json()
+      if (data.message) {
+        return data.message
+      }
+    }
+
+    return "There was an unknown error"
+  }
+
+  const handleRunCompleted = async (threadId: string) => {
+    setInputDisabled(false)
   }
 
   const { messages, setMessages, sendMessage } = AssistantThread(
     functionCallHandler,
-    () => setInputDisabled(false),
+    handleRunCompleted,
+    currentAssistant,
   )
 
   // Automatically scroll to bottom of chat
@@ -51,14 +59,14 @@ const Chat = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (!userInput.trim()) return
-    sendMessage(userInput, currentAssistant)
-    setMessages((prevMessages: any) => [
-      ...prevMessages,
-      { role: "user", text: userInput },
-    ])
+    sendMessage(userInput)
     setUserInput("")
     setInputDisabled(true)
     scrollToBottom()
+  }
+
+  const runScripts = async () => {
+    const response = await fetch("/api/run-scripts")
   }
 
   return (
@@ -81,6 +89,8 @@ const Chat = () => {
         userInput={userInput}
         setUserInput={setUserInput}
       />
+
+      <button onClick={runScripts}>Run Scripts</button>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import openai from "@/app/openai"
 import { NextRequest, NextResponse } from "next/server"
+import { MessageCreateParams } from "openai/resources/beta/threads/messages"
 
 export const runtime = "nodejs"
 
@@ -21,11 +22,12 @@ export async function POST(
 ): Promise<NextResponse> {
   // Parse the request body with type casting
   const { content, assistantId }: RequestBody = await request.json()
-
-  await openai.beta.threads.messages.create(threadId, {
+  let params = {
     role: "user",
     content,
-  })
+  } as MessageCreateParams
+
+  await openai.beta.threads.messages.create(threadId, params)
 
   const stream = openai.beta.threads.runs.stream(threadId, {
     assistant_id: assistantId,
