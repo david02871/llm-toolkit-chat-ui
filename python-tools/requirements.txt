@@ -1,0 +1,2 @@
+pyautogen==0.2.35
+flask==3.0.3
