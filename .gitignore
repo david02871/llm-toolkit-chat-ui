@@ -39,3 +39,5 @@ next-env.d.ts
 .vscode
 
 temp-files
+/python-tools/.venv
+/python-tools/work_dir
