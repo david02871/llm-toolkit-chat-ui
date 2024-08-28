@@ -3,10 +3,14 @@
 import React, { useState, useEffect, useRef } from "react"
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs"
 import Message from "./message"
-import AssistantThread from "@/app/hooks/assistant-thread"
+import AssistantThread, {
+  MessageType,
+  ToolCallType,
+} from "@/app/hooks/assistant-thread"
 import UserInput from "./userInput"
 import Header from "../header"
 import usePersistentState from "@/app/hooks/usePersistedState"
+import ToolCall from "./ToolCall"
 
 const Chat = () => {
   const [inputDisabled, setInputDisabled] = useState(false)
@@ -41,7 +45,7 @@ const Chat = () => {
     setInputDisabled(false)
   }
 
-  const { messages, setMessages, sendMessage } = AssistantThread(
+  const { messages, toolCalls, sendMessage } = AssistantThread(
     functionCallHandler,
     handleRunCompleted,
     currentAssistant,
@@ -69,6 +73,12 @@ const Chat = () => {
     const response = await fetch("/api/run-scripts")
   }
 
+  const allMessages = [...messages, ...toolCalls].sort(
+    (a: any, b: any) => a.timestamp - b.timestamp,
+  ) as (MessageType | ToolCallType)[]
+
+  console.log(allMessages)
+
   return (
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
       <Header
@@ -77,9 +87,19 @@ const Chat = () => {
       />
       <main className="flex-1 overflow-y-auto">
         <div className="w-[680px] p-2 mx-auto flex flex-col gap-4">
-          {messages.map((msg: any, index: number) => (
-            <Message key={index} role={msg.role} text={msg.text} />
-          ))}
+          {allMessages.map((message, index) =>
+            "toolCallId" in message ? (
+              <ToolCall
+                key={index}
+                name={message.name}
+                args={message.args}
+                output={message.output}
+              />
+            ) : (
+              <Message key={index} role={message.role} text={message.text} />
+            ),
+          )}
+
           <div ref={messagesEndRef} />
         </div>
       </main>
@@ -90,7 +110,7 @@ const Chat = () => {
         setUserInput={setUserInput}
       />
 
-      <button onClick={runScripts}>Run Scripts</button>
+      {/* <button onClick={runScripts}>Run Scripts</button> */}
     </div>
   )
 }

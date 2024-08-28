@@ -7,12 +7,27 @@ type FunctionCallHandler = (
   call: RequiredActionFunctionToolCall,
 ) => Promise<string>
 
+export type MessageType = {
+  timestamp: string
+  role: "user" | "assistant" | "code"
+  text: string
+}
+
+export type ToolCallType = {
+  timestamp: string
+  toolCallId: string
+  name: string
+  args: string
+  output: null
+}
+
 const AssistantThread = (
   functionCallHandler: FunctionCallHandler,
   handleRunCompleted: (threadId: string) => void,
   assistantId: string,
 ) => {
-  const [messages, setMessages] = useState<any>([])
+  const [messages, setMessages] = useState<MessageType[]>([])
+  const [toolCalls, setToolCalls] = useState<ToolCallType[]>([])
   const [threadId, setThreadId] = useState("")
 
   // create a new threadID when chat component created
@@ -39,7 +54,19 @@ const AssistantThread = (
   }
 
   const appendMessage = (role: string, text: string) => {
-    setMessages((prevMessages: any[]) => [...prevMessages, { role, text }])
+    let timestamp = Date.now()
+    setMessages((prevMessages: any[]) => [
+      ...prevMessages,
+      { timestamp, role, text },
+    ])
+  }
+
+  const appendToolCall = (toolCallId: string, name: string, args: string) => {
+    let timestamp = Date.now()
+    setToolCalls((prevToolCalls: any[]) => [
+      ...prevToolCalls,
+      { toolCallId, timestamp, name, args, output: null },
+    ])
   }
 
   const annotateLastMessage = (annotations: any[]) => {
@@ -70,33 +97,41 @@ const AssistantThread = (
       return
     }
 
-    const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls
+    const actionToolCalls =
+      event.data.required_action.submit_tool_outputs.tool_calls
 
-    appendMessage(
-      "assistant",
-      `
-\`\`\`json
-  ${JSON.stringify(toolCalls, null, 2)}
-\`\`\`
-      `,
-    )
+    actionToolCalls.forEach((actionToolCall) => {
+      if (actionToolCall.type == "function") {
+        appendToolCall(
+          actionToolCall.id,
+          actionToolCall.function.name,
+          actionToolCall.function.arguments,
+        )
+      }
+    })
 
-    // loop over tool calls and call function handler
     const toolCallOutputs = await Promise.all(
-      toolCalls.map(async (toolCall: any) => {
-        const result = await functionCallHandler(toolCall)
-        return { output: result, tool_call_id: toolCall.id }
+      actionToolCalls.map(async (actionToolCall: any) => {
+        const result = await functionCallHandler(actionToolCall)
+        return { output: result, tool_call_id: actionToolCall.id }
       }),
     )
 
-    appendMessage(
-      "assistant",
-      `
-\`\`\`json
-${JSON.stringify(toolCallOutputs, null, 2)}
-\`\`\`
-      `,
-    )
+    toolCallOutputs.forEach((toolCallOutput) => {
+      setToolCalls((prevToolCalls: any[]) => {
+        return prevToolCalls.map((toolCall: any) => {
+          if (toolCall.toolCallId === toolCallOutput.tool_call_id) {
+            return {
+              ...toolCall,
+              output: toolCallOutput.output,
+            }
+          } else {
+            return toolCall
+          }
+        })
+      })
+    })
+
     submitActionResult(runId, toolCallOutputs)
   }
 
@@ -171,7 +206,7 @@ ${JSON.stringify(toolCallOutputs, null, 2)}
     handleSystemStreamEvents(response.body as ReadableStream<any>)
   }
 
-  return { messages, setMessages, sendMessage }
+  return { messages, toolCalls, sendMessage }
 }
 
 export default AssistantThread
