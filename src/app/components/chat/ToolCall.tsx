@@ -27,7 +27,7 @@ const CollapsibleSection = ({
       >
         <div className="flex items-center space-x-2">
           <FiTool className="text-lg" />
-          <h2 className="text-lg font-semibold tool-call">{title}</h2>
+          <h2 className="text-md">{title}</h2>
         </div>
         <ChevronDownIcon
           className={`transform transition-transform ${open ? "rotate-180" : "rotate-0"}`}
@@ -68,7 +68,7 @@ const ToolCall = ({
   const hasArgs = args && args !== "{}"
 
   return (
-    <div className="flex markdown rounded-3xl bg-background-surface px-5 py-2.5">
+    <div className="flex markdown px-3 py-1 dark:text-neutral-400 text-neutral-400">
       <CollapsibleSection title={name}>
         <div className="prose dark:prose-invert text-text-primary mt-2">
           {/* Arguments */}
