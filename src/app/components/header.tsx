@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from "react"
 import ThemeToggleButton from "./ui/themeToggleButton"
-import CreateAssistantDialog from "./createAssistantDialog"
 import { TitleSelect, TitleSelectItem } from "./ui/TitleSelect"
-import { PlusIcon } from "@radix-ui/react-icons"
+import { ReloadIcon } from "@radix-ui/react-icons"
 
 type HeaderProps = {
   currentAssistant: string
@@ -13,7 +12,6 @@ type HeaderProps = {
 
 const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
   const [assistants, setAssistants] = useState([])
-  const [assistantDialogOpen, setAssistantDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchAssistants = async () => {
@@ -44,21 +42,15 @@ const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
             </TitleSelect>
           )}
           <button
-            onClick={() => setAssistantDialogOpen(true)}
-            className="ml-2 p-2 rounded-full bg-background-primary text-text-primary hover:bg-background-surface"
-            aria-label="Add new assistant"
+            onClick={() => {/* Refresh functionality will be added later */}}
+            className="p-2 rounded-full bg-background-primary text-text-primary hover:bg-background-surface"
+            aria-label="Refresh assistants"
           >
-            <PlusIcon className="w-5 h-5" />
+            <ReloadIcon className="w-5 h-5" />
           </button>
         </div>
         <ThemeToggleButton />
       </div>
-      {assistantDialogOpen && (
-        <CreateAssistantDialog
-          onClose={() => setAssistantDialogOpen(false)}
-          setCurrentAssistant={setCurrentAssistant}
-        />
-      )}
     </div>
   )
 }
