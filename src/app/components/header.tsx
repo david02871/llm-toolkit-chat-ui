@@ -12,15 +12,29 @@ type HeaderProps = {
 
 const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
   const [assistants, setAssistants] = useState([])
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const fetchAssistants = async () => {
+    const response = await fetch("/api/assistants")
+    let fetchedAssistants = await response.json()
+    setAssistants(fetchedAssistants)
+  }
 
   useEffect(() => {
-    const fetchAssistants = async () => {
-      const response = await fetch("/api/assistants")
-      let fetchedAssistants = await response.json()
-      setAssistants(fetchedAssistants)
-    }
     fetchAssistants()
-  }, [setAssistants, setCurrentAssistant])
+  }, [])
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await fetch("/api/assistants", { method: "POST" })
+      await fetchAssistants()
+    } catch (error) {
+      console.error("Error refreshing assistants:", error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   return (
     <div>
@@ -42,11 +56,16 @@ const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
             </TitleSelect>
           )}
           <button
-            onClick={() => {/* Refresh functionality will be added later */}}
-            className="p-2 rounded-full bg-background-primary text-text-primary hover:bg-background-surface"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className={`p-2 rounded-full bg-background-primary text-text-secondary hover:bg-background-surface ${
+              isRefreshing ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             aria-label="Refresh assistants"
           >
-            <ReloadIcon className="w-5 h-5" />
+            <ReloadIcon
+              className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`}
+            />
           </button>
         </div>
         <ThemeToggleButton />

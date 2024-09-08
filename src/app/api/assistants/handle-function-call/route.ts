@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
-import civicrmAssistant from "@/app/assistants/civicrm-assistant"
+import { getFunctionMapByAssistantId } from "@/app/assistants"
 
 export const runtime = "nodejs"
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let functionCall = await request.json()
+  let data = await request.json()
+  let functionCall = data.functionCall
+  let currentAssistantId = data.currentAssistant
   let args = JSON.parse(functionCall.function.arguments)
   let result = ""
 
-  const functionMap = civicrmAssistant.functionMap
+  const functionMap = await getFunctionMapByAssistantId(currentAssistantId)
 
   if (Object.keys(functionMap).includes(functionCall?.function?.name)) {
     result = await callFunction(functionMap, functionCall?.function?.name, args)

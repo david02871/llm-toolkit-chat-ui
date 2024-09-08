@@ -28,7 +28,7 @@ const Chat = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(functionCall),
+      body: JSON.stringify({ functionCall, currentAssistant }),
     })) as any
 
     if (response) {
