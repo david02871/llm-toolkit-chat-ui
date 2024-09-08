@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import civicrmAssistant from "@/app/assistants/civicrm-assistant"
 
 export const runtime = "nodejs"
 
@@ -7,12 +8,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   let args = JSON.parse(functionCall.function.arguments)
   let result = ""
 
-  const functionMap = {}
+  const functionMap = civicrmAssistant.functionMap
 
   if (Object.keys(functionMap).includes(functionCall?.function?.name)) {
     result = await callFunction(functionMap, functionCall?.function?.name, args)
 
     if (result) {
+      if (result.length > 3000) {
+        result =
+          result.substring(0, 3000) + "... Result trimmed to 3000 characters."
+      }
+
       // @ts-ignore
       return Response.json({ message: result })
     }
