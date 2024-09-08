@@ -9,6 +9,7 @@ import remarkSupersub from "remark-supersub"
 import * as Collapsible from "@radix-ui/react-collapsible"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { FiTool } from "react-icons/fi"
+import OutputRenderer from "../output-renderers"
 
 const CollapsibleSection = ({
   title,
@@ -58,17 +59,18 @@ const ToolCall = ({
   name,
   args,
   output,
+  outputRendererName,
 }: {
   name: string
   args: string
   output: string | null
+  outputRendererName: string | null
 }) => {
   const rehypePlugins: any = [[rehypeHighlight, { detect: true }]]
-
   const hasArgs = args && args !== "{}"
 
   return (
-    <div className="flex markdown px-3 py-1 dark:text-neutral-400 text-neutral-400">
+    <div className="flex flex-col markdown px-3 py-1 dark:text-neutral-400 text-neutral-400">
       <CollapsibleSection title={name}>
         <div className="prose dark:prose-invert text-text-primary mt-2">
           {/* Arguments */}
@@ -107,6 +109,11 @@ const ToolCall = ({
           )}
         </div>
       </CollapsibleSection>
+      {outputRendererName && (
+        <div className="flex justify-center items-center pt-4">
+          <OutputRenderer name={outputRendererName} props={output} />
+        </div>
+      )}
     </div>
   )
 }

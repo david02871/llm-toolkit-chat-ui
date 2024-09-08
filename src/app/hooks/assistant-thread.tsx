@@ -2,10 +2,11 @@ import { useEffect, useState } from "react"
 import assistantStreamHandler from "./assistant-stream-handler"
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs"
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs"
+import { FunctionResponse } from "@/app/assistants"
 
 type FunctionCallHandler = (
   call: RequiredActionFunctionToolCall,
-) => Promise<string>
+) => Promise<FunctionResponse>
 
 export type MessageType = {
   timestamp: string
@@ -19,6 +20,7 @@ export type ToolCallType = {
   name: string
   args: string
   output: null
+  outputRendererName: string | null
 }
 
 const AssistantThread = (
@@ -112,24 +114,31 @@ const AssistantThread = (
 
     const toolCallOutputs = await Promise.all(
       actionToolCalls.map(async (actionToolCall: any) => {
-        const result = await functionCallHandler(actionToolCall)
-        return { output: result, tool_call_id: actionToolCall.id }
+        const functionResponse = await functionCallHandler(actionToolCall)
+        return {
+          outputRendererName: functionResponse?.outputRendererName,
+          output: functionResponse.result,
+          tool_call_id: actionToolCall.id,
+        }
       }),
     )
 
-    toolCallOutputs.forEach((toolCallOutput) => {
+    toolCallOutputs.forEach((toolCallOutput, index) => {
       setToolCalls((prevToolCalls: any[]) => {
         return prevToolCalls.map((toolCall: any) => {
           if (toolCall.toolCallId === toolCallOutput.tool_call_id) {
             return {
               ...toolCall,
               output: toolCallOutput.output,
+              outputRendererName: toolCallOutput.outputRendererName,
             }
           } else {
             return toolCall
           }
         })
       })
+
+      delete toolCallOutputs[index].outputRendererName
     })
 
     submitActionResult(runId, toolCallOutputs)

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react"
 
-const AnalogClock = (output: string) => {
+interface AnalogClockProps {
+  output: string
+}
+
+const AnalogClock: React.FC<AnalogClockProps> = ({ output }) => {
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
@@ -34,7 +38,6 @@ const AnalogClock = (output: string) => {
           style={secondsStyle}
         ></div>
       </div>
-      <p className="mt-4">Output: {output}</p>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { AssistantCreateParams } from "openai/src/resources/beta/assistants.js"
+import { FunctionResponse, FunctionMap, Assistant } from "../index"
 
 const name = "Time assistant"
 const description = `You can get the current time and date.`
@@ -20,16 +21,19 @@ const assistantParams: AssistantCreateParams = {
   ],
 }
 
-async function getCurrentTime({}) {
+async function getCurrentTime(): Promise<FunctionResponse> {
   const currentTime = new Date().toLocaleTimeString()
   const currentDate = new Date().toLocaleDateString()
-  return JSON.stringify({
-    time: currentTime,
-    date: currentDate,
-  })
+  return {
+    result: JSON.stringify({
+      time: currentTime,
+      date: currentDate,
+    }),
+    outputRendererName: "AnalogClock",
+  }
 }
 
-const functionMap = {
+const functionMap: FunctionMap = {
   get_current_time: getCurrentTime,
 }
 
@@ -37,4 +41,4 @@ export default {
   name,
   assistantParams,
   functionMap,
-}
+} as Assistant

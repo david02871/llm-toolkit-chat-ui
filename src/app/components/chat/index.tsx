@@ -11,7 +11,7 @@ import UserInput from "./userInput"
 import Header from "../header"
 import usePersistentState from "@/app/hooks/usePersistedState"
 import ToolCall from "./ToolCall"
-
+import { FunctionResponse } from "@/app/assistants"
 const Chat = () => {
   const [inputDisabled, setInputDisabled] = useState(false)
   const [userInput, setUserInput] = useState("")
@@ -22,7 +22,7 @@ const Chat = () => {
 
   const functionCallHandler = async (
     functionCall: RequiredActionFunctionToolCall,
-  ) => {
+  ): Promise<FunctionResponse> => {
     const response = (await fetch(`/api/assistants/handle-function-call`, {
       method: "POST",
       headers: {
@@ -33,12 +33,15 @@ const Chat = () => {
 
     if (response) {
       let data = await response.json()
-      if (data.message) {
-        return data.message
+      if (data) {
+        return data as FunctionResponse
       }
     }
 
-    return "There was an unknown error"
+    return {
+      result: "There was an unknown error",
+      outputRendererName: null,
+    }
   }
 
   const handleRunCompleted = async (threadId: string) => {
@@ -77,8 +80,6 @@ const Chat = () => {
     (a: any, b: any) => a.timestamp - b.timestamp,
   ) as (MessageType | ToolCallType)[]
 
-  console.log(allMessages)
-
   return (
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
       <Header
@@ -90,10 +91,11 @@ const Chat = () => {
           {allMessages.map((message, index) =>
             "toolCallId" in message ? (
               <ToolCall
-                key={index}
                 name={message.name}
                 args={message.args}
                 output={message.output}
+                outputRendererName={message.outputRendererName}
+                key={message.toolCallId}
               />
             ) : (
               <Message key={index} role={message.role} text={message.text} />

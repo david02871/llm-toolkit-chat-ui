@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getFunctionMapByAssistantId } from "@/app/assistants"
+import { getFunctionMap, FunctionMap, FunctionResponse } from "@/app/assistants"
 
 export const runtime = "nodejs"
 
@@ -8,21 +8,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   let functionCall = data.functionCall
   let currentAssistantId = data.currentAssistant
   let args = JSON.parse(functionCall.function.arguments)
-  let result = ""
+  let functionResponse: FunctionResponse
 
-  const functionMap = await getFunctionMapByAssistantId(currentAssistantId)
+  const functionMap = await getFunctionMap(currentAssistantId)
 
   if (Object.keys(functionMap).includes(functionCall?.function?.name)) {
-    result = await callFunction(functionMap, functionCall?.function?.name, args)
+    functionResponse = await callFunction(
+      functionMap,
+      functionCall?.function?.name,
+      args,
+    )
 
-    if (result) {
-      if (result.length > 3000) {
-        result =
-          result.substring(0, 3000) + "... Result trimmed to 3000 characters."
+    if (functionResponse?.result) {
+      if (functionResponse.result.length > 3000) {
+        functionResponse.result =
+          functionResponse.result.substring(0, 3000) +
+          "... Result trimmed to 3000 characters."
       }
 
       // @ts-ignore
-      return Response.json({ message: result })
+      return Response.json(functionResponse)
     }
   }
 
@@ -30,21 +35,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   return Response.json({ message: "There was an unknown error" })
 }
 
-type FunctionMap = {
-  [key: string]: (params: any) => Promise<any>
-}
-
 async function callFunction(
   functionMapping: FunctionMap,
   name: string,
   params: any,
-) {
-  // @ts-ignore
+): Promise<FunctionResponse> {
   const func = functionMapping[name]
 
   if (!func) {
     throw new Error(`Function ${name} not found`)
   }
 
-  return await func(params)
+  const response: FunctionResponse = await func(params)
+  return response
 }

@@ -1,7 +1,8 @@
 import openai from "@/app/openai"
 import timeAssistant from "./custom-assistants/time-assistant"
+import { AssistantCreateParams } from "openai/src/resources/beta/assistants.js"
 
-const assistants = [timeAssistant]
+const assistants: Assistant[] = [timeAssistant]
 
 export async function createAssistants() {
   const existingAssistants = await openai.beta.assistants.list()
@@ -19,12 +20,34 @@ export async function createAssistants() {
   }
 }
 
-export async function getFunctionMapByAssistantId(assistantId: string) {
+export async function getAssistantById(assistantId: string) {
   const existingAssistants = await openai.beta.assistants.list()
   const existingAssistant = existingAssistants.data.find(
     (a) => a.id === assistantId,
   )
 
   const assistant = assistants.find((a) => a.name === existingAssistant?.name)
-  return assistant?.functionMap as any
+  return assistant
+}
+
+export async function getFunctionMap(
+  assistantId: string,
+): Promise<FunctionMap> {
+  const assistant = await getAssistantById(assistantId)
+  return assistant!.functionMap
+}
+
+export interface FunctionResponse {
+  result: string
+  outputRendererName?: string | null
+}
+
+export interface FunctionMap {
+  [key: string]: Function
+}
+
+export interface Assistant {
+  name: string
+  assistantParams: AssistantCreateParams
+  functionMap: FunctionMap
 }
