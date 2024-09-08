@@ -33,7 +33,7 @@ async function getCurrentTime(): Promise<FunctionResponse> {
 }
 
 const functionMap: FunctionMap = {
-  getCurrentTime: getCurrentTime,
+  getCurrentTime__Clock__CONFIRM: getCurrentTime,
 }
 
 export default {

@@ -53,6 +53,7 @@ const Chat = () => {
     sendMessage,
     hasPendingToolCalls,
     confirmPendingToolCalls,
+    cancelToolCalls,
   } = AssistantThread(functionCallHandler, handleRunCompleted, currentAssistant)
 
   // Automatically scroll to bottom of chat
@@ -95,6 +96,7 @@ const Chat = () => {
                 name={message.name}
                 args={message.args}
                 output={message.output}
+                cancelled={message.cancelled}
                 key={message.toolCallId}
               />
             ) : (
@@ -105,12 +107,29 @@ const Chat = () => {
           <div ref={messagesEndRef} />
         </div>
       </main>
-      <UserInput
-        handleSubmit={handleSubmit}
-        isDisabled={inputDisabled}
-        userInput={userInput}
-        setUserInput={setUserInput}
-      />
+      {hasPendingToolCalls ? (
+        <div className="p-4 flex justify-center space-x-4">
+          <button
+            onClick={confirmPendingToolCalls}
+            className="px-4 py-2 bg-green-500 dark:bg-green-600 text-white rounded hover:bg-green-600 dark:hover:bg-green-700 transition-colors"
+          >
+            Run Tools
+          </button>
+          <button
+            onClick={cancelToolCalls}
+            className="px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded hover:bg-red-600 dark:hover:bg-red-700 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <UserInput
+          handleSubmit={handleSubmit}
+          isDisabled={inputDisabled}
+          userInput={userInput}
+          setUserInput={setUserInput}
+        />
+      )}
 
       {/* <button onClick={runScripts}>Run Scripts</button> */}
     </div>

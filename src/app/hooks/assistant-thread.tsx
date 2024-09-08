@@ -19,7 +19,8 @@ export type ToolCallType = {
   toolCallId: string
   name: string
   args: string
-  output: null
+  output: string | null
+  cancelled?: boolean
 }
 
 type PendingToolCalls = {
@@ -35,8 +36,9 @@ const AssistantThread = (
   const [messages, setMessages] = useState<MessageType[]>([])
   const [toolCalls, setToolCalls] = useState<ToolCallType[]>([])
   const [threadId, setThreadId] = useState("")
-  const [pendingToolCalls, setPendingToolCalls] =
-    useState<PendingToolCalls | null>(null)
+  const [pendingToolCalls, setPendingToolCalls] = useState<PendingToolCalls[]>(
+    [],
+  )
 
   // create a new threadID when chat component created
   useEffect(() => {
@@ -144,9 +146,14 @@ const AssistantThread = (
     if (!requiresConfirmation) {
       await performToolCalls(runId, actionToolCalls)
     } else {
-      setPendingToolCalls({
-        runId,
-        toolCalls: actionToolCalls,
+      setPendingToolCalls((prev: PendingToolCalls[]) => {
+        return [
+          ...prev,
+          {
+            runId,
+            toolCalls: actionToolCalls,
+          },
+        ]
       })
     }
   }
@@ -178,6 +185,44 @@ const AssistantThread = (
     })
 
     submitActionResult(runId, toolCallOutputs)
+  }
+
+  const cancelToolCalls = async () => {
+    for (const pendingToolCall of pendingToolCalls) {
+      const runId = pendingToolCall.runId
+      const actionToolCalls = pendingToolCall.toolCalls
+
+      if (!runId || !actionToolCalls) {
+        return
+      }
+
+      const toolCallOutputs = actionToolCalls.map((actionToolCall: any) => {
+        return {
+          output:
+            "The function call was cancelled by the user. Ask them what they want to do next before continuing.",
+          tool_call_id: actionToolCall.id,
+        }
+      })
+
+      toolCallOutputs.forEach((toolCallOutput: any, index: any) => {
+        setToolCalls((prevToolCalls: any[]) => {
+          return prevToolCalls.map((toolCall: any) => {
+            if (toolCall.toolCallId === toolCallOutput.tool_call_id) {
+              return {
+                ...toolCall,
+                cancelled: true,
+              }
+            } else {
+              return toolCall
+            }
+          })
+        })
+      })
+
+      submitActionResult(runId, toolCallOutputs)
+    }
+
+    setPendingToolCalls([])
   }
 
   const handlePendingTasks = async (
@@ -252,17 +297,22 @@ const AssistantThread = (
   }
 
   const confirmPendingToolCalls = async () => {
-    if (pendingToolCalls) {
-      await performToolCalls(pendingToolCalls.runId, pendingToolCalls.toolCalls)
+    if (pendingToolCalls.length > 0) {
+      for (const pendingToolCall of pendingToolCalls) {
+        await performToolCalls(pendingToolCall.runId, pendingToolCall.toolCalls)
+      }
     }
+
+    setPendingToolCalls([])
   }
 
   return {
     messages,
     toolCalls,
     sendMessage,
-    hasPendingToolCalls: pendingToolCalls !== null,
+    hasPendingToolCalls: pendingToolCalls.length > 0,
     confirmPendingToolCalls,
+    cancelToolCalls,
   }
 }
 

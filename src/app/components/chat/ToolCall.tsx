@@ -16,17 +16,19 @@ const CollapsibleSection = ({
   title,
   children,
   isLoading = false,
+  isEmpty = false,
 }: {
   title: string
   children: React.ReactNode
   isLoading?: boolean
+  isEmpty?: boolean
 }) => {
   const [open, setOpen] = useState(false)
 
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen} className="w-full">
       <div
-        className="flex items-center justify-between cursor-pointer w-full mb-0"
+        className={`flex items-center justify-between cursor-pointer w-full mb-0`}
         onClick={() => setOpen(!open)}
       >
         <div className="flex items-center space-x-2">
@@ -37,9 +39,11 @@ const CollapsibleSection = ({
           )}
           <h2 className="text-md">{title}</h2>
         </div>
-        <ChevronDownIcon
-          className={`transform transition-transform ${open ? "rotate-180" : "rotate-0"}`}
-        />
+        {!isEmpty && (
+          <ChevronDownIcon
+            className={`transform transition-transform ${open ? "rotate-180" : "rotate-0"}`}
+          />
+        )}
       </div>
       <Collapsible.Content>{children}</Collapsible.Content>
     </Collapsible.Root>
@@ -76,10 +80,12 @@ const ToolCall = ({
   name,
   args,
   output,
+  cancelled,
 }: {
   name: string
   args: string
   output: string | null
+  cancelled?: boolean
 }) => {
   const rehypePlugins: any = [[rehypeHighlight, { detect: true }]]
   const hasArgs = args && args !== "{}"
@@ -87,8 +93,16 @@ const ToolCall = ({
   const outputRendererName = getOutputRendererName(name)
 
   return (
-    <div className="flex flex-col markdown px-3 py-1 dark:text-neutral-400 text-neutral-400">
-      <CollapsibleSection title={name} isLoading={output === null}>
+    <div
+      className={`flex flex-col markdown px-3 py-1 dark:text-neutral-400 text-neutral-400 ${
+        cancelled ? "bg-red-100 dark:bg-red-900" : ""
+      }`}
+    >
+      <CollapsibleSection
+        title={name.split("__")[0]}
+        isLoading={output === null && !cancelled}
+        isEmpty={!output && !hasArgs}
+      >
         <div className="prose dark:prose-invert text-text-primary mt-2">
           {/* Arguments */}
           {hasArgs && (
@@ -126,7 +140,7 @@ const ToolCall = ({
           )}
         </div>
       </CollapsibleSection>
-      {outputRendererName && (
+      {outputRendererName && Boolean(output) && (
         <div className="flex justify-center items-center pt-4">
           <OutputRenderer name={outputRendererName} props={output} />
         </div>
