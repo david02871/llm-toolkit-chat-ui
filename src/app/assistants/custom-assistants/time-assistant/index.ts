@@ -23,7 +23,10 @@ const assistantParams: AssistantCreateParams = {
 async function getCurrentTime({}) {
   const currentTime = new Date().toLocaleTimeString()
   const currentDate = new Date().toLocaleDateString()
-  return `The current time is ${currentTime} and the current date is ${currentDate}.`
+  return JSON.stringify({
+    time: currentTime,
+    date: currentDate,
+  })
 }
 
 const functionMap = {
