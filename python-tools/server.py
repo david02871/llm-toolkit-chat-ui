@@ -19,45 +19,18 @@ executor = DockerCommandLineCodeExecutor(
 @app.route('/execute', methods=['POST'])
 def execute_code():
     try:
-        # Get the code from the request.
         code = request.json.get('code')
 
-        # Sample python code block (markdown) that returns the sum of two numbers.
-#         code = """
-# ```python
-# a = 10
-# b = 20
-# sum = a + b
-# print(sum)
-# ```
-#         """
-
-        # Ensure code is provided
         if not code:
             return jsonify({"error": "No code provided"}), 400
-        
-        # Log the code to the console.
-        print(code)
 
         code_extractor = executor.code_extractor
-
-        # Extract code blocks from the code.
         code_blocks = code_extractor.extract_code_blocks(code)
 
-        # Log the number of code blocks extracted.
-        print(f"Extracted {len(code_blocks)} code blocks")
-
-        # Ensure code blocks are provided
         if not code_blocks:
             return jsonify({"error": "No code blocks found"}), 400
         
-        # Execute the code blocks.
         result = executor.execute_code_blocks(code_blocks)
-
-        # Log the result of the code execution.
-        print(result)
-
-        # Return the result as a JSON response.
         return jsonify({"result": result.output})
     
     except Exception as e:
