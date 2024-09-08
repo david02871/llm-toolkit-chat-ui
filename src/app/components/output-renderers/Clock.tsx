@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 
-interface AnalogClockProps {
+interface ClockProps {
   output: string
 }
 
-const AnalogClock: React.FC<AnalogClockProps> = ({ output }) => {
+const Clock: React.FC<ClockProps> = ({ output }) => {
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
@@ -42,4 +42,4 @@ const AnalogClock: React.FC<AnalogClockProps> = ({ output }) => {
   )
 }
 
-export default AnalogClock
+export default Clock

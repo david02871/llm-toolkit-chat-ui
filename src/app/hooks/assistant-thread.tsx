@@ -20,7 +20,11 @@ export type ToolCallType = {
   name: string
   args: string
   output: null
-  outputRendererName: string | null
+}
+
+type PendingToolCalls = {
+  runId: string
+  toolCalls: RequiredActionFunctionToolCall[]
 }
 
 const AssistantThread = (
@@ -31,6 +35,8 @@ const AssistantThread = (
   const [messages, setMessages] = useState<MessageType[]>([])
   const [toolCalls, setToolCalls] = useState<ToolCallType[]>([])
   const [threadId, setThreadId] = useState("")
+  const [pendingToolCalls, setPendingToolCalls] =
+    useState<PendingToolCalls | null>(null)
 
   // create a new threadID when chat component created
   useEffect(() => {
@@ -65,9 +71,15 @@ const AssistantThread = (
 
   const appendToolCall = (toolCallId: string, name: string, args: string) => {
     let timestamp = Date.now()
-    setToolCalls((prevToolCalls: any[]) => [
+    setToolCalls((prevToolCalls) => [
       ...prevToolCalls,
-      { toolCallId, timestamp, name, args, output: null },
+      {
+        toolCallId,
+        timestamp: timestamp.toString(),
+        name,
+        args,
+        output: null,
+      },
     ])
   }
 
@@ -89,7 +101,6 @@ const AssistantThread = (
     })
   }
 
-  // handleRequiresAction - handle function call
   const handleRequiresAction = async (
     event: AssistantStreamEvent.ThreadRunRequiresAction,
   ) => {
@@ -99,8 +110,16 @@ const AssistantThread = (
       return
     }
 
+    console.log(event)
+
     const actionToolCalls =
       event.data.required_action.submit_tool_outputs.tool_calls
+
+    const functionNames = actionToolCalls.map((actionToolCall) => {
+      if (actionToolCall.type == "function") {
+        return actionToolCall.function.name
+      }
+    })
 
     actionToolCalls.forEach((actionToolCall) => {
       if (actionToolCall.type == "function") {
@@ -112,33 +131,50 @@ const AssistantThread = (
       }
     })
 
+    const toolCallNames = actionToolCalls.map((actionToolCall) => {
+      if (actionToolCall.type == "function") {
+        return actionToolCall.function.name
+      }
+    })
+
+    const requiresConfirmation = toolCallNames.some((name) =>
+      name?.includes("__CONFIRM"),
+    )
+
+    if (!requiresConfirmation) {
+      await performToolCalls(runId, actionToolCalls)
+    } else {
+      setPendingToolCalls({
+        runId,
+        toolCalls: actionToolCalls,
+      })
+    }
+  }
+
+  const performToolCalls = async (runId: string, actionToolCalls: any) => {
     const toolCallOutputs = await Promise.all(
       actionToolCalls.map(async (actionToolCall: any) => {
         const functionResponse = await functionCallHandler(actionToolCall)
         return {
-          outputRendererName: functionResponse?.outputRendererName,
           output: functionResponse.result,
           tool_call_id: actionToolCall.id,
         }
       }),
     )
 
-    toolCallOutputs.forEach((toolCallOutput, index) => {
+    toolCallOutputs.forEach((toolCallOutput: any, index: any) => {
       setToolCalls((prevToolCalls: any[]) => {
         return prevToolCalls.map((toolCall: any) => {
           if (toolCall.toolCallId === toolCallOutput.tool_call_id) {
             return {
               ...toolCall,
               output: toolCallOutput.output,
-              outputRendererName: toolCallOutput.outputRendererName,
             }
           } else {
             return toolCall
           }
         })
       })
-
-      delete toolCallOutputs[index].outputRendererName
     })
 
     submitActionResult(runId, toolCallOutputs)
@@ -215,7 +251,19 @@ const AssistantThread = (
     handleSystemStreamEvents(response.body as ReadableStream<any>)
   }
 
-  return { messages, toolCalls, sendMessage }
+  const confirmPendingToolCalls = async () => {
+    if (pendingToolCalls) {
+      await performToolCalls(pendingToolCalls.runId, pendingToolCalls.toolCalls)
+    }
+  }
+
+  return {
+    messages,
+    toolCalls,
+    sendMessage,
+    hasPendingToolCalls: pendingToolCalls !== null,
+    confirmPendingToolCalls,
+  }
 }
 
 export default AssistantThread

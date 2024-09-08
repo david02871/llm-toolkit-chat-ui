@@ -14,7 +14,7 @@ const assistantParams: AssistantCreateParams = {
     {
       type: "function",
       function: {
-        name: "get_current_time",
+        name: "getCurrentTime__Clock__CONFIRM",
         description: "This tool retrieves the current time and date.",
       },
     },
@@ -29,12 +29,11 @@ async function getCurrentTime(): Promise<FunctionResponse> {
       time: currentTime,
       date: currentDate,
     }),
-    outputRendererName: "AnalogClock",
   }
 }
 
 const functionMap: FunctionMap = {
-  get_current_time: getCurrentTime,
+  getCurrentTime: getCurrentTime,
 }
 
 export default {

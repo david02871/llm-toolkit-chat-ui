@@ -39,7 +39,6 @@ export async function getFunctionMap(
 
 export interface FunctionResponse {
   result: string
-  outputRendererName?: string | null
 }
 
 export interface FunctionMap {

@@ -40,7 +40,6 @@ const Chat = () => {
 
     return {
       result: "There was an unknown error",
-      outputRendererName: null,
     }
   }
 
@@ -48,11 +47,13 @@ const Chat = () => {
     setInputDisabled(false)
   }
 
-  const { messages, toolCalls, sendMessage } = AssistantThread(
-    functionCallHandler,
-    handleRunCompleted,
-    currentAssistant,
-  )
+  const {
+    messages,
+    toolCalls,
+    sendMessage,
+    hasPendingToolCalls,
+    confirmPendingToolCalls,
+  } = AssistantThread(functionCallHandler, handleRunCompleted, currentAssistant)
 
   // Automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -94,7 +95,6 @@ const Chat = () => {
                 name={message.name}
                 args={message.args}
                 output={message.output}
-                outputRendererName={message.outputRendererName}
                 key={message.toolCallId}
               />
             ) : (
