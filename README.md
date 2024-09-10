@@ -1,4 +1,4 @@
-An LLM Chat UI that utilizes the OpenAI Assistants API
+A Next.js LLM Chat UI for function calling using the OpenAI Assistants API.
 
 ## Features
 
