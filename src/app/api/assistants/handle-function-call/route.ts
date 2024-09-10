@@ -4,10 +4,32 @@ import { getFunctionMap, FunctionMap, FunctionResponse } from "@/app/assistants"
 export const runtime = "nodejs"
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let data = await request.json()
+  let data
+  try {
+    data = await request.json()
+  } catch (error) {
+    console.error({ error, request })
+
+    return NextResponse.json(
+      { message: "Invalid JSON in request body" },
+      { status: 400 },
+    )
+  }
+
   let functionCall = data.functionCall
   let currentAssistantId = data.currentAssistant
-  let args = JSON.parse(functionCall.function.arguments)
+
+  let args
+  try {
+    args = JSON.parse(functionCall.function.arguments)
+  } catch (error) {
+    console.error({ error, functionCall })
+    return NextResponse.json(
+      { message: "Invalid JSON in function arguments" },
+      { status: 400 },
+    )
+  }
+
   let functionResponse: FunctionResponse
 
   const functionMap = await getFunctionMap(currentAssistantId)
