@@ -1,8 +1,9 @@
 import openai from "@/app/openai"
-import timeAssistant from "./custom-assistants/time-assistant"
 import { AssistantCreateParams } from "openai/src/resources/beta/assistants.js"
+import timeAssistant from "./time-assistant"
+import pythonAssistant from "./python-assistant"
 
-const assistants: Assistant[] = [timeAssistant]
+const assistants: Assistant[] = [timeAssistant, pythonAssistant]
 
 export async function createAssistants() {
   const existingAssistants = await openai.beta.assistants.list()
