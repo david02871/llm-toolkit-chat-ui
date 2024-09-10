@@ -52,16 +52,9 @@ const serveOpenAIImage = async (fileId: string) => {
 
 const serveLocalFile = async (fileName: string) => {
   try {
-    const filePath = path.join(
-      process.cwd(),
-      "python-tools",
-      "work_dir",
-      fileName,
-    )
-    console.log(`Serving file: ${filePath}`)
+    const filePath = path.join(process.cwd(), "work_dir", fileName)
     const file = fs.readFileSync(filePath)
 
-    // Set the appropriate headers
     return new NextResponse(file, {
       headers: {
         "Content-Type": "application/json",

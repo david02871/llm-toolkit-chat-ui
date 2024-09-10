@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "launch-python-server": "./.venv/bin/python ./server.py",
+    "install-python-server": "python3 -m venv ./.venv && .venv/bin/pip install -r ./requirements.txt"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.0",

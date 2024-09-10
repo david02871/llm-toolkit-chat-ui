@@ -8,10 +8,9 @@ current_directory = os.getcwd()
 work_dir = os.path.join(current_directory, "work_dir")
 os.makedirs(work_dir, exist_ok=True)
 
-# Create a Docker command line code executor.
 executor = DockerCommandLineCodeExecutor(
-    image="python:3.12-slim",  # Execute code using the given docker image name.
-    timeout=60,  # Timeout for each code execution in seconds.
+    image="python:3.12-slim",
+    timeout=60,
     work_dir=work_dir,
     stop_container=False
 )
@@ -20,12 +19,15 @@ executor = DockerCommandLineCodeExecutor(
 def execute_code():
     try:
         code = request.json.get('code')
+        language = request.json.get('language')
 
-        if not code:
+        code_block_string = f"```{language}\n{code}\n```"
+
+        if not code_block_string:
             return jsonify({"error": "No code provided"}), 400
 
         code_extractor = executor.code_extractor
-        code_blocks = code_extractor.extract_code_blocks(code)
+        code_blocks = code_extractor.extract_code_blocks(code_block_string)
 
         if not code_blocks:
             return jsonify({"error": "No code blocks found"}), 400

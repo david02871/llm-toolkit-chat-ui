@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 
 interface ClockProps {
-  output: string
+  value: any
 }
 
-const Clock: React.FC<ClockProps> = ({ output }) => {
+const Clock: React.FC<ClockProps> = ({ value }) => {
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
@@ -24,17 +24,17 @@ const Clock: React.FC<ClockProps> = ({ output }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-64 h-64 rounded-full border-4 border-gray-800">
+      <div className="relative w-64 h-64 rounded-full border-4 border-gray-800 dark:border-gray-200">
         <div
-          className="absolute top-1/2 left-1/2 w-1 h-16 -mt-16 -ml-0.5 bg-gray-800 origin-bottom"
+          className="absolute top-1/2 left-1/2 w-1 h-16 -mt-16 -ml-0.5 bg-gray-800 dark:bg-gray-200 origin-bottom"
           style={hoursStyle}
         ></div>
         <div
-          className="absolute top-1/2 left-1/2 w-0.5 h-24 -mt-24 -ml-0.25 bg-gray-600 origin-bottom"
+          className="absolute top-1/2 left-1/2 w-0.5 h-24 -mt-24 -ml-0.25 bg-gray-600 dark:bg-gray-400 origin-bottom"
           style={minutesStyle}
         ></div>
         <div
-          className="absolute top-1/2 left-1/2 w-0.5 h-32 -mt-32 -ml-0.25 bg-red-500 origin-bottom"
+          className="absolute top-1/2 left-1/2 w-0.5 h-32 -mt-32 -ml-0.25 bg-red-500 dark:bg-red-400 origin-bottom"
           style={secondsStyle}
         ></div>
       </div>

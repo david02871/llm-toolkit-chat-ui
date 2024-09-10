@@ -82,6 +82,15 @@ const Chat = () => {
     (a: any, b: any) => a.timestamp - b.timestamp,
   ) as (MessageType | ToolCallType)[]
 
+  const handlePendingToolCalls = async () => {
+    setInputDisabled(true)
+    try {
+      await confirmPendingToolCalls()
+    } finally {
+      setInputDisabled(false)
+    }
+  }
+
   return (
     <div className="h-full max-w-full flex-1 flex-col overflow-hidden flex">
       <Header
@@ -110,7 +119,7 @@ const Chat = () => {
       {hasPendingToolCalls ? (
         <div className="p-4 flex justify-center space-x-4">
           <button
-            onClick={confirmPendingToolCalls}
+            onClick={handlePendingToolCalls}
             className="px-4 py-2 bg-green-500 dark:bg-green-600 text-white rounded hover:bg-green-600 dark:hover:bg-green-700 transition-colors"
           >
             Run Tools

@@ -17,13 +17,15 @@ const CollapsibleSection = ({
   children,
   isLoading = false,
   isEmpty = false,
+  defaultOpen = false,
 }: {
   title: string
   children: React.ReactNode
   isLoading?: boolean
   isEmpty?: boolean
+  defaultOpen?: boolean
 }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen || false)
 
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen} className="w-full">
@@ -76,6 +78,28 @@ const getOutputRendererName = (text: string) => {
   return parts.slice(1).find((part) => part !== "CONFIRM") || null
 }
 
+type ArgToRender = {
+  name: string
+  value: string
+  componentName: string
+}
+
+const parseArgs = (args: Record<string, unknown>): ArgToRender[] => {
+  let argsToRender: ArgToRender[] = []
+  Object.entries(args).forEach(([key, value]) => {
+    let parts = key.split("__")
+    if (parts.length > 1) {
+      argsToRender.push({
+        name: parts[0],
+        value: String(value),
+        componentName: parts[1],
+      })
+    }
+  })
+
+  return argsToRender
+}
+
 const ToolCall = ({
   name,
   args,
@@ -89,6 +113,15 @@ const ToolCall = ({
 }) => {
   const rehypePlugins: any = [[rehypeHighlight, { detect: true }]]
   const hasArgs = args && args !== "{}"
+  let argsObject = null
+  if (hasArgs) {
+    try {
+      argsObject = JSON.parse(args)
+    } catch (error) {
+      console.error("Error parsing args:", error)
+    }
+  }
+  let argsToRender = hasArgs ? parseArgs(argsObject) : null
 
   const outputRendererName = getOutputRendererName(name)
 
@@ -102,6 +135,7 @@ const ToolCall = ({
         title={name.split("__")[0]}
         isLoading={output === null && !cancelled}
         isEmpty={!output && !hasArgs}
+        defaultOpen={name.includes("__CONFIRM")}
       >
         <div className="prose dark:prose-invert text-text-primary mt-2">
           {/* Arguments */}
@@ -120,6 +154,24 @@ const ToolCall = ({
             >
               {convertToCodeBlock(args, "json")}
             </Markdown>
+          )}
+          {hasArgs && argsToRender && (
+            <div>
+              {argsToRender.map((arg) => (
+                <div key={arg.name}>
+                  <h3>
+                    <code>{arg.name}:</code>
+                  </h3>
+                  <div>
+                    <OutputRenderer
+                      key={arg.name}
+                      name={arg.componentName}
+                      value={arg.value}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
           {/* Output */}
           {output && (
@@ -142,7 +194,7 @@ const ToolCall = ({
       </CollapsibleSection>
       {outputRendererName && Boolean(output) && (
         <div className="flex justify-center items-center pt-4">
-          <OutputRenderer name={outputRendererName} props={output} />
+          <OutputRenderer name={outputRendererName} value={output} />
         </div>
       )}
     </div>
