@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 
 type UserInputProps = {
-  handleSubmit: (e: any) => void
+  handleSubmit: (e: React.SyntheticEvent) => void
   isDisabled: boolean
   userInput: string
   setUserInput: (value: string) => void
@@ -15,11 +15,11 @@ const UserInput = ({
   userInput,
   setUserInput,
 }: UserInputProps) => {
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserInput(event.target.value)
   }
 
-  const handleKeyDown = (event: any) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault() // Prevents newline from being added
       handleSubmit(event)
@@ -37,7 +37,10 @@ const UserInput = ({
 
   return (
     <div className="w-full pb-6 bg-background-primary flex justify-center">
-      <div className="flex items-center bg-background-surface p-2 rounded-3xl max-w-[700px] w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center bg-background-surface p-2 rounded-3xl max-w-[700px] w-full"
+      >
         <button className="bg-transparent text-text-primary p-2">
           {/* Attach button, placeholder for icon */}
           <svg
@@ -70,8 +73,8 @@ const UserInput = ({
           }}
         />
         <button
+          type="submit"
           className={`ml-3 bg-text-secondary p-3 rounded-full ${isDisabled ? "" : "hover:bg-text-primary"}`}
-          onClick={handleSubmit}
           disabled={isDisabled}
           style={{
             cursor: isDisabled ? "not-allowed" : "pointer",
@@ -94,7 +97,7 @@ const UserInput = ({
             />
           </svg>
         </button>
-      </div>
+      </form>
     </div>
   )
 }

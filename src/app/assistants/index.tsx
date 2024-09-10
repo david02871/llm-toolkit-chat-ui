@@ -3,12 +3,12 @@ import { AssistantCreateParams } from "openai/src/resources/beta/assistants.js"
 import timeAssistant from "./time-assistant"
 import pythonAssistant from "./python-assistant"
 
-const assistants: Assistant[] = [timeAssistant, pythonAssistant]
+const allAssistants: Assistant[] = [timeAssistant, pythonAssistant]
 
 export async function createAssistants() {
   const existingAssistants = await openai.beta.assistants.list()
 
-  for (const assistant of assistants) {
+  for (const assistant of allAssistants) {
     const existingAssistant = existingAssistants.data.find(
       (a) => a.name === assistant.name,
     )
@@ -27,15 +27,22 @@ export async function getAssistantById(assistantId: string) {
     (a) => a.id === assistantId,
   )
 
-  const assistant = assistants.find((a) => a.name === existingAssistant?.name)
+  const assistant = allAssistants.find(
+    (a) => a.name === existingAssistant?.name,
+  )
+
   return assistant
 }
 
 export async function getFunctionMap(
   assistantId: string,
-): Promise<FunctionMap> {
+): Promise<FunctionMap | undefined> {
   const assistant = await getAssistantById(assistantId)
-  return assistant!.functionMap
+  if (!assistant) {
+    console.error(`Assistant not found for id: ${assistantId}`)
+    return {}
+  }
+  return assistant.functionMap
 }
 
 export interface FunctionResponse {

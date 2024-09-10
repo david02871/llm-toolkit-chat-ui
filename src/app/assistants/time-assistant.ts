@@ -1,7 +1,7 @@
 import { AssistantCreateParams } from "openai/src/resources/beta/assistants.js"
 import { FunctionResponse, FunctionMap, Assistant } from "./index"
 
-const name = "Example assistant"
+const name = "Time assistant"
 const description = `You can get the current time and date.`
 const instructions = `Use this tool to get the current time and date.`
 

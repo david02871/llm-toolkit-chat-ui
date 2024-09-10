@@ -12,19 +12,28 @@ import { FiTool } from "react-icons/fi"
 import OutputRenderer from "../output-renderers"
 import { ReloadIcon } from "@radix-ui/react-icons"
 
+interface CollapsibleSectionProps {
+  title: string
+  children: React.ReactNode
+  isLoading?: boolean
+  isEmpty?: boolean
+  defaultOpen?: boolean
+}
+
+interface ToolCallProps {
+  name: string
+  args: string
+  output: string | null
+  cancelled?: boolean
+}
+
 const CollapsibleSection = ({
   title,
   children,
   isLoading = false,
   isEmpty = false,
   defaultOpen = false,
-}: {
-  title: string
-  children: React.ReactNode
-  isLoading?: boolean
-  isEmpty?: boolean
-  defaultOpen?: boolean
-}) => {
+}: CollapsibleSectionProps) => {
   const [open, setOpen] = useState(defaultOpen || false)
 
   return (
@@ -100,17 +109,7 @@ const parseArgs = (args: Record<string, unknown>): ArgToRender[] => {
   return argsToRender
 }
 
-const ToolCall = ({
-  name,
-  args,
-  output,
-  cancelled,
-}: {
-  name: string
-  args: string
-  output: string | null
-  cancelled?: boolean
-}) => {
+const ToolCall = ({ name, args, output, cancelled }: ToolCallProps) => {
   const rehypePlugins: any = [[rehypeHighlight, { detect: true }]]
   const hasArgs = args && args !== "{}"
   let argsObject = null

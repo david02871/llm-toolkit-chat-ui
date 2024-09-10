@@ -9,13 +9,13 @@ type FunctionCallHandler = (
 ) => Promise<FunctionResponse>
 
 export type MessageType = {
-  timestamp: string
+  timestamp: number
   role: "user" | "assistant" | "code"
   text: string
 }
 
 export type ToolCallType = {
-  timestamp: string
+  timestamp: number
   toolCallId: string
   name: string
   args: string
@@ -28,11 +28,21 @@ type PendingToolCalls = {
   toolCalls: RequiredActionFunctionToolCall[]
 }
 
+// Add proper typing for the hook's return value
+type AssistantThreadReturn = {
+  messages: MessageType[]
+  toolCalls: ToolCallType[]
+  sendMessage: (text: string) => Promise<void>
+  hasPendingToolCalls: boolean
+  confirmPendingToolCalls: () => Promise<void>
+  cancelToolCalls: () => Promise<void>
+}
+
 const AssistantThread = (
   functionCallHandler: FunctionCallHandler,
   handleRunCompleted: (threadId: string) => void,
   assistantId: string,
-) => {
+): AssistantThreadReturn => {
   const [messages, setMessages] = useState<MessageType[]>([])
   const [toolCalls, setToolCalls] = useState<ToolCallType[]>([])
   const [threadId, setThreadId] = useState("")
@@ -77,7 +87,7 @@ const AssistantThread = (
       ...prevToolCalls,
       {
         toolCallId,
-        timestamp: timestamp.toString(),
+        timestamp,
         name,
         args,
         output: null,
@@ -111,8 +121,6 @@ const AssistantThread = (
     if (event?.data?.required_action?.submit_tool_outputs == null) {
       return
     }
-
-    console.log(event)
 
     const actionToolCalls =
       event.data.required_action.submit_tool_outputs.tool_calls
@@ -184,7 +192,7 @@ const AssistantThread = (
       })
     })
 
-    submitActionResult(runId, toolCallOutputs)
+    await submitActionResult(runId, toolCallOutputs)
   }
 
   const cancelToolCalls = async () => {
@@ -193,16 +201,14 @@ const AssistantThread = (
       const actionToolCalls = pendingToolCall.toolCalls
 
       if (!runId || !actionToolCalls) {
-        return
+        continue
       }
 
-      const toolCallOutputs = actionToolCalls.map((actionToolCall: any) => {
-        return {
-          output:
-            "The function call was cancelled by the user. Ask them what they want to do next before continuing.",
-          tool_call_id: actionToolCall.id,
-        }
-      })
+      const toolCallOutputs = actionToolCalls.map((actionToolCall: any) => ({
+        output:
+          "The function call was cancelled by the user. Ask them what they want to do next before continuing.",
+        tool_call_id: actionToolCall.id,
+      }))
 
       toolCallOutputs.forEach((toolCallOutput: any, index: any) => {
         setToolCalls((prevToolCalls: any[]) => {
@@ -219,7 +225,7 @@ const AssistantThread = (
         })
       })
 
-      submitActionResult(runId, toolCallOutputs)
+      await submitActionResult(runId, toolCallOutputs)
     }
 
     setPendingToolCalls([])

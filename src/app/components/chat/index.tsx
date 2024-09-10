@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs"
 import Message from "./message"
 import AssistantThread, {
@@ -12,6 +12,9 @@ import Header from "../header"
 import usePersistentState from "@/app/hooks/usePersistedState"
 import ToolCall from "./ToolCall"
 import { FunctionResponse } from "@/app/assistants"
+
+type ChatItem = MessageType | ToolCallType
+
 const Chat = () => {
   const [inputDisabled, setInputDisabled] = useState(false)
   const [userInput, setUserInput] = useState("")
@@ -20,32 +23,38 @@ const Chat = () => {
     "",
   )
 
-  const functionCallHandler = async (
-    functionCall: RequiredActionFunctionToolCall,
-  ): Promise<FunctionResponse> => {
-    const response = (await fetch(`/api/assistants/handle-function-call`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ functionCall, currentAssistant }),
-    })) as any
+  const functionCallHandler = useCallback(
+    async (
+      functionCall: RequiredActionFunctionToolCall,
+    ): Promise<FunctionResponse> => {
+      try {
+        const response = await fetch(`/api/assistants/handle-function-call`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ functionCall, currentAssistant }),
+        })
 
-    if (response) {
-      let data = await response.json()
-      if (data) {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
         return data as FunctionResponse
+      } catch (error) {
+        console.error("Error in functionCallHandler:", error)
+        return {
+          result: "There was an error processing the function call",
+        }
       }
-    }
+    },
+    [currentAssistant],
+  )
 
-    return {
-      result: "There was an unknown error",
-    }
-  }
-
-  const handleRunCompleted = async (threadId: string) => {
+  const handleRunCompleted = useCallback(() => {
     setInputDisabled(false)
-  }
+  }, [])
 
   const {
     messages,
@@ -65,22 +74,21 @@ const Chat = () => {
     scrollToBottom()
   }, [messages])
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault()
-    if (!userInput.trim()) return
-    sendMessage(userInput)
-    setUserInput("")
-    setInputDisabled(true)
-    scrollToBottom()
-  }
-
-  const runScripts = async () => {
-    const response = await fetch("/api/run-scripts")
-  }
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!userInput.trim()) return
+      sendMessage(userInput)
+      setUserInput("")
+      setInputDisabled(true)
+      scrollToBottom()
+    },
+    [userInput, sendMessage, setUserInput, scrollToBottom],
+  )
 
   const allMessages = [...messages, ...toolCalls].sort(
-    (a: any, b: any) => a.timestamp - b.timestamp,
-  ) as (MessageType | ToolCallType)[]
+    (a: ChatItem, b: ChatItem) => a.timestamp - b.timestamp,
+  ) as ChatItem[]
 
   const handlePendingToolCalls = async () => {
     setInputDisabled(true)

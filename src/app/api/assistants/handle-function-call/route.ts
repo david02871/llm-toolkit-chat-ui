@@ -34,6 +34,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const functionMap = await getFunctionMap(currentAssistantId)
 
+  if (!functionMap) {
+    return NextResponse.json(
+      { message: "Assistant not found" },
+      { status: 404 },
+    )
+  }
+
   if (Object.keys(functionMap).includes(functionCall?.function?.name)) {
     functionResponse = await callFunction(
       functionMap,

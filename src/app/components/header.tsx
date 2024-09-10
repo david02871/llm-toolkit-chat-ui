@@ -10,8 +10,13 @@ type HeaderProps = {
   setCurrentAssistant: (assistant: string) => void
 }
 
+type Assistant = {
+  id: string
+  name: string
+}
+
 const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
-  const [assistants, setAssistants] = useState([])
+  const [assistants, setAssistants] = useState<Assistant[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   const fetchAssistants = async () => {
@@ -48,7 +53,7 @@ const Header = ({ currentAssistant, setCurrentAssistant }: HeaderProps) => {
               onValueChange={setCurrentAssistant}
             >
               {assistants.length > 0 &&
-                assistants.map((assistant: any) => (
+                assistants.map((assistant: Assistant) => (
                   <TitleSelectItem key={assistant.id} value={assistant.id}>
                     {assistant.name || "Untitled Assistant"}
                   </TitleSelectItem>
