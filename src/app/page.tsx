@@ -6,7 +6,7 @@ import Sidebar from "./components/sidebar"
 export default function Home() {
   return (
     <div className="flex h-screen w-screen">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Chat />
     </div>
   )
