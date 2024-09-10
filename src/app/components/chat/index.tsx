@@ -142,7 +142,7 @@ const Chat = () => {
       ) : (
         <UserInput
           handleSubmit={handleSubmit}
-          isDisabled={inputDisabled}
+          isDisabled={inputDisabled || !currentAssistant}
           userInput={userInput}
           setUserInput={setUserInput}
         />
