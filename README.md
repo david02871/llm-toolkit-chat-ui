@@ -46,3 +46,7 @@ Use the refresh button to regenerate assistants. Assistants are currently identi
 ## Note
 
 This project is set up for development purposes and is not intended for use in production environments.
+
+## Contributing
+
+Pull requests are welcome! If you have any improvements or new features to suggest, feel free to contribute to the project.
