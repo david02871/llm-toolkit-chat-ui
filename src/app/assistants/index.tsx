@@ -9,15 +9,25 @@ export async function createAssistants() {
   const existingAssistants = await openai.beta.assistants.list()
 
   for (const assistant of allAssistants) {
-    const existingAssistant = existingAssistants.data.find(
+    const matchingAssistants = existingAssistants.data.filter(
       (a) => a.name === assistant.name,
     )
 
-    if (existingAssistant) {
-      await openai.beta.assistants.del(existingAssistant.id)
+    if (matchingAssistants.length > 1) {
+      throw new Error(`Multiple assistants found with name: ${assistant.name}`)
     }
 
-    await openai.beta.assistants.create(assistant.assistantParams)
+    const existingAssistant = matchingAssistants[0]
+
+    if (existingAssistant) {
+      await openai.beta.assistants.update(
+        existingAssistant.id,
+        assistant.assistantParams
+      )
+    } else {
+      // Create a new assistant if it doesn't exist
+      await openai.beta.assistants.create(assistant.assistantParams)
+    }
   }
 }
 
@@ -27,11 +37,19 @@ export async function getAssistantById(assistantId: string) {
     (a) => a.id === assistantId,
   )
 
-  const assistant = allAssistants.find(
-    (a) => a.name === existingAssistant?.name,
+  if (!existingAssistant) {
+    return undefined
+  }
+
+  const matchingAssistants = allAssistants.filter(
+    (a) => a.name === existingAssistant.name,
   )
 
-  return assistant
+  if (matchingAssistants.length > 1) {
+    throw new Error(`Multiple assistants found with name: ${existingAssistant.name}`)
+  }
+
+  return matchingAssistants[0]
 }
 
 export async function getFunctionMap(
